@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import logo from './logo.svg';
+import React, {useState, useEffect } from 'react';
 import './App.css';
-
+export const appHeader = 'Simple MFA Input with Countdown Timer'
 function App() {
-  const [timer, setTimer] = React.useState(30)
+  const [timer, setTimer] = useState(30)
   useEffect(()=>{
     let reduceTimer: NodeJS.Timer
     if (timer > 0)    {
@@ -14,6 +13,9 @@ function App() {
   return (
     <div className="App">
       <header className="App-header">
+        <p>
+          {appHeader}
+        </p>
         <p>
           Timer {timer} second(s)
         </p>
