@@ -1,23 +1,23 @@
-import React, {useState, useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import { MfaWrapper } from './Mfa/Mfa';
 export const appHeader = 'Simple MFA Input with Countdown Timer'
 function App() {
   const [timer, setTimer] = useState(30)
-  useEffect(()=>{
+  useEffect(() => {
     let reduceTimer: NodeJS.Timer
-    if (timer > 0)    {
-      reduceTimer = setInterval(() => setTimer(time => time - 1),1000)
+    if (timer > 0) {
+      reduceTimer = setInterval(() => setTimer(time => time - 1), 1000)
     }
-    return ()=> clearInterval(reduceTimer)
-  },[timer])
+    return () => clearInterval(reduceTimer)
+  }, [timer])
   return (
     <div className="App">
       <header className="App-header">
         <p>
           {appHeader}
         </p>
-        <div> 
+        <div>
           <MfaWrapper>
             <div>Child Component</div>
           </MfaWrapper>
