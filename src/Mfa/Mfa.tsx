@@ -11,7 +11,6 @@ type MfaCodeDigitTileProps = {
   setCode: React.Dispatch<React.SetStateAction<string[]>>
   setCurrentTileIndex: React.Dispatch<React.SetStateAction<number>>
   isCurrentTile: boolean
-  id: string
 }
 
 const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
@@ -20,18 +19,15 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
   setCode,
   isCurrentTile,
   setCurrentTileIndex,
-  id,
 }) => {
   const updateCode = (value:string)=>{
     if (ALLOWED_KEY.includes(value)) {
       setCode(code => {
         const newCode = code
         newCode[index]=value
-        // console.log({newCode})
         if (value !== '') {
           setCurrentTileIndex(index+1)
         }
-        // new KeyboardEvent('keydown', key: 'Tab')
         return [...newCode]
       })
     }
@@ -59,23 +55,11 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
       type="text"
       minLength={1}
       maxLength={1}
-      // placeholder={index.toString()}
+      placeholder={index.toString()}
       value={digit}
       onChange={(e)=> updateCode(e.target.value)}
-      onKeyDown={(event)=> 
-      //   {
-      //   if (event.key === 'Enter') {
-      //     return console.log('Enter pressed')
-      //   }
-      //   if (event.key === 'Backspace' || event.key==='Delete') {
-      //     return
-      //   }
-      // }
-      handleKeyDown(event)
-      }
-      id={id}
+      onKeyDown={event=> handleKeyDown(event)}
       ref={tileRef}
-      // autoFocus={isCurrentTile}
     />
   )
 
@@ -83,35 +67,26 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
 
 type MfaTilesProps= {
   length: number
-  // code: string
 }
 const MfaTiles: FC<MfaTilesProps> = ({
   length,
-  // code,
-  // setCode
 }) =>{
   const [code,setCode] = useState(
-    Array.from({length: length}, (_,i)=> 
-    // (i+1).toString()
-    ''
-    )
-    )
-  useEffect(()=>{
-    // if (!code.includes('')){
-        // setCurrentTileIndex(t=>Math.min(t+1,code.join('').length))
-    // }
-  },[code,length])
+    Array.from({length: length}, (_,)=> '')
+  )
 
   const [currentTileIndex, setCurrentTileIndex] = useState(0)
-  const focusTile = useRef()
-  // useEffect(()=> console.log(focusTile.current),[currentTileIndex])
+
   return (
     <>
       {code.map((digit,index) =>
-        // <span> {digit} </span>
-        <MfaCodeDigitTile key={index} index={index} digit={digit} setCode={setCode} isCurrentTile={currentTileIndex === index} id={'tile'+index}
-        //  ref={currentTileIndex === index && focusTile}
-        setCurrentTileIndex = {setCurrentTileIndex}
+        <MfaCodeDigitTile
+          key={index}
+          index={index}
+          digit={digit}
+          setCode={setCode}
+          isCurrentTile={currentTileIndex === index}
+          setCurrentTileIndex = {setCurrentTileIndex}
          />
       )}
     </>
@@ -130,8 +105,6 @@ export const MfaWrapper: FC<MfaWrapperProps> = ({
   if (!isMfaAuthenticated) {
     return (
       <MfaTiles
-        //  code={code}
-        // setCode={setCode}
         length={6}
       />
   )}
