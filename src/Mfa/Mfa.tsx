@@ -1,4 +1,4 @@
-import React, { FC, ReactNode, useState } from "react";
+import React, { FC, ReactNode, useEffect, useRef, useState } from "react";
 
 const ALLOWED_KEY = Array.from({length: 10}, (_,i)=> i.toString()).concat( [
   // 'Backspace', 'Delete',
@@ -9,13 +9,18 @@ type MfaCodeDigitTileProps = {
   index: number
   digit: string
   setCode: React.Dispatch<React.SetStateAction<string[]>>
-
+  setCurrentTileIndex: React.Dispatch<React.SetStateAction<number>>
+  isCurrentTile: boolean
+  id: string
 }
 
 const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
   index,
   digit,
   setCode,
+  isCurrentTile,
+  setCurrentTileIndex,
+  id,
 }) => {
   const updateCode = (value:string)=>{
     if (ALLOWED_KEY.includes(value)) {
@@ -23,10 +28,31 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
         const newCode = code
         newCode[index]=value
         // console.log({newCode})
+        if (value !== '') {
+          setCurrentTileIndex(index+1)
+        }
+        // new KeyboardEvent('keydown', key: 'Tab')
         return [...newCode]
       })
     }
   }
+  const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>)=>{
+    if (event.key === 'Enter') {
+      return console.log('Enter pressed')
+    }
+    if (event.key === 'Backspace' || event.key==='Delete') {
+      if (digit) return
+      if (!digit) {
+        event.preventDefault()
+        return setCurrentTileIndex(index -1 )}
+    }
+  }
+    const tileRef = useRef<HTMLInputElement>(null)
+    useEffect(()=>  {
+      if (tileRef.current && isCurrentTile)  {
+         tileRef.current.focus()
+      }
+    },[isCurrentTile])
 
   return (
     <input 
@@ -36,14 +62,20 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
       // placeholder={index.toString()}
       value={digit}
       onChange={(e)=> updateCode(e.target.value)}
-      onKeyDown={(event)=> {
-        if (event.key === 'Enter') {
-          return console.log('Enter pressed')
-        }
-        if (event.key === 'Backspace' || event.key==='Delete') {
-          return
-        }
-      }}
+      onKeyDown={(event)=> 
+      //   {
+      //   if (event.key === 'Enter') {
+      //     return console.log('Enter pressed')
+      //   }
+      //   if (event.key === 'Backspace' || event.key==='Delete') {
+      //     return
+      //   }
+      // }
+      handleKeyDown(event)
+      }
+      id={id}
+      ref={tileRef}
+      // autoFocus={isCurrentTile}
     />
   )
 
@@ -64,12 +96,23 @@ const MfaTiles: FC<MfaTilesProps> = ({
     ''
     )
     )
+  useEffect(()=>{
+    // if (!code.includes('')){
+        // setCurrentTileIndex(t=>Math.min(t+1,code.join('').length))
+    // }
+  },[code,length])
 
+  const [currentTileIndex, setCurrentTileIndex] = useState(0)
+  const focusTile = useRef()
+  // useEffect(()=> console.log(focusTile.current),[currentTileIndex])
   return (
     <>
       {code.map((digit,index) =>
         // <span> {digit} </span>
-        <MfaCodeDigitTile key={index} index={index} digit={digit} setCode={setCode}/>
+        <MfaCodeDigitTile key={index} index={index} digit={digit} setCode={setCode} isCurrentTile={currentTileIndex === index} id={'tile'+index}
+        //  ref={currentTileIndex === index && focusTile}
+        setCurrentTileIndex = {setCurrentTileIndex}
+         />
       )}
     </>
   )
