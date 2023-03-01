@@ -14,3 +14,4 @@ First time setup:
 - `git init`
 - Add `.gitignore`
   - `npx create-react-app mfa_code_input --template typescript`
+- For adding ESLint and Prettier, see 'Add eslint' and 'Add prettier' commits.
