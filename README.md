@@ -13,4 +13,9 @@ First time setup:
 
 - `git init`
 - Add `.gitignore`
-  - `npx create-react-app mfa_code_input --template typescript`
+- `npx create-react-app mfa_code_input --template typescript`
+- add eslint prettier and styles guide: https://blog.bitsrc.io/how-to-set-up-airbnb-style-guide-for-react-projects-fc7dfb1f3d68
+
+```
+npx eslint --init
+```
