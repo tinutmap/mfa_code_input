@@ -11,6 +11,9 @@
 # production
 /build
 
+# transpiled js files
+/backend/dist
+
 # misc
 .DS_Store
 .env.local
