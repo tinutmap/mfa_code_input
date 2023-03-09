@@ -1,0 +1,50 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "npm",
+			"script": "backend",
+			"problemMatcher": [],
+			"label": "npm: backend"
+		},
+		{
+			"type": "npm",
+			"script": "backendTypescript",
+			"isBackground": true,
+			"problemMatcher": [{
+				"fileLocation":"relative",
+					"pattern": {
+						"regexp": " Watching for file changes."
+					},
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": " Watching for file changes.",
+						"endsPattern": " Watching for file changes.",
+					}
+			}],
+			"label": "npm: backendTypescript",
+			"detail": "npx tsc -p backend/tsconfig.json -w"
+		},
+		{
+			"type": "npm",
+			"script": "start",
+			"problemMatcher": [
+				{
+					"fileLocation":"relative",
+					"pattern": {
+						"regexp": "No issues found."
+					},
+					"background": {
+						"activeOnStart": true,
+						"beginsPattern": "No issues found.",
+						"endsPattern": "No issues found.",
+					}
+				}
+			],
+			"label": "npm: start",
+			"detail": "react-scripts start",
+			"isBackground":  true,
+			
+		},
+	]
+}
