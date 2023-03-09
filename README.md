@@ -15,3 +15,4 @@ First time setup:
 - Add `.gitignore`
   - `npx create-react-app mfa_code_input --template typescript`
 - For adding ESLint and Prettier, see 'Add eslint' and 'Add prettier' commits.
+- Setup Node Express with Typescript https://blog.logrocket.com/how-to-set-up-node-typescript-express/
