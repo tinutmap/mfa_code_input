@@ -1,4 +1,5 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import { getMfaStatus } from './Mfa.query';
 
 const ALLOWED_KEY = Array.from({ length: 10 }, (_, i) => i.toString()).concat([
   // 'Backspace', 'Delete',
@@ -69,8 +70,7 @@ type MfaTilesProps = {
   length: number;
 };
 const MfaTiles: FC<MfaTilesProps> = ({ length }) => {
-  const [code, setCode] = useState(Array.from({ length: length }, (_) => ''));
-
+  const [code, setCode] = useState(Array.from({ length: length }, () => ''));
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
 
   return (
@@ -94,10 +94,26 @@ type MfaWrapperProps = {
 };
 
 export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
-  const isMfaAuthenticated = false;
-
+  const [isLoaded, setIsLoaded] = useState(false);
+  const [isMfaAuthenticated, setIsMfaAuthenticated] = useState(false);
+  const [codeLength, setCodeLength] = useState(0);
+  useEffect(() => {
+    const getData = async () => {
+      const data = await getMfaStatus();
+      console.log({ data });
+      if (data) {
+        setIsMfaAuthenticated(data?.isMfaAuthenticated);
+        setCodeLength(data?.mfaCodeLength ?? 0);
+        setIsLoaded(true);
+      }
+    };
+    getData();
+  }, []);
+  if (!isLoaded) {
+    return <p>Loading...</p>;
+  }
   if (!isMfaAuthenticated) {
-    return <MfaTiles length={6} />;
+    return <MfaTiles length={codeLength} />;
   }
   return <div>{children}</div>;
 };
