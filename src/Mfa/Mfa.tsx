@@ -94,13 +94,20 @@ type MfaWrapperProps = {
 };
 
 export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
+  const [timer, setTimer] = useState(30);
+  useEffect(() => {
+    let reduceTimer: NodeJS.Timer;
+    if (timer > 0) {
+      reduceTimer = setInterval(() => setTimer((time) => time - 1), 1000);
+    }
+    return () => clearInterval(reduceTimer);
+  }, [timer]);
   const [isLoaded, setIsLoaded] = useState(false);
   const [isMfaAuthenticated, setIsMfaAuthenticated] = useState(false);
   const [codeLength, setCodeLength] = useState(0);
   useEffect(() => {
     const getData = async () => {
       const data = await getMfaStatus();
-      console.log({ data });
       if (data) {
         setIsMfaAuthenticated(data?.isMfaAuthenticated);
         setCodeLength(data?.mfaCodeLength ?? 0);
@@ -113,7 +120,12 @@ export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
     return <p>Loading...</p>;
   }
   if (!isMfaAuthenticated) {
-    return <MfaTiles length={codeLength} />;
+    return (
+      <>
+        <MfaTiles length={codeLength} />
+        <p>Timer {timer} second(s)</p>
+      </>
+    );
   }
   return <div>{children}</div>;
 };
