@@ -12,7 +12,6 @@ export type MfaStatusDatatype = {
 };
 
 export const getMfaStatus = (): Promise<void | MfaStatusDatatype> => {
-  // let data;
   return fetch('http://localhost:3000/mfa/status')
     .then((res) => res.json() as Promise<MfaStatusDatatype>)
     .then((result) => {
