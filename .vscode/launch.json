@@ -5,12 +5,17 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "type": "node",
-            "request": "launch",
             "name": "Launch BE",
-            "program": "${workspaceFolder}/backend/backend.ts",
-            "preLaunchTask": "npm: backendTypescript",
-            "outFiles": ["${workspaceFolder}/backend/dist/**/*.js"]
+            "request": "launch",
+            "runtimeArgs": [
+                "run-script",
+                "backend-debug",
+            ],
+            "runtimeExecutable": "npm",
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "type": "node"
         },
         {
             "type": "chrome",

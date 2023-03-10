@@ -21,8 +21,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "backend": "concurrently \"npx tsc -p backend/tsconfig.json\" \"nodemon -q backend/dist/index.js\"",
-    "backendTypescript": "npx tsc -p backend/tsconfig.json -w"
+    "backend-debug": "concurrently \"npx tsc -p backend/tsconfig.json -w\" \"nodemon -q backend/dist/backend.js\""
   },
   "eslintConfig": {
     "extends": [
