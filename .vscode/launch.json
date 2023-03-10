@@ -8,7 +8,7 @@
             "type": "node",
             "request": "launch",
             "name": "Launch BE",
-            "program": "${workspaceFolder}/backend/index.ts",
+            "program": "${workspaceFolder}/backend/backend.ts",
             "preLaunchTask": "npm: backendTypescript",
             "outFiles": ["${workspaceFolder}/backend/dist/**/*.js"]
         },
