@@ -39,7 +39,7 @@ export enum ResponseStatus {
 }
 
 export function useAsync<T>(
-  callBackFn: () => Promise<T>,
+  asyncCallBackFn: () => Promise<T>,
   dependencyArray: [],
   initialState?: T
 ) {
@@ -50,7 +50,7 @@ export function useAsync<T>(
   });
 
   useEffect(() => {
-    callBackFn()
+    asyncCallBackFn()
       .then((result) => {
         dispatch({ status: ResponseStatus.Resolved, data: result });
       })
