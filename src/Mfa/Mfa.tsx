@@ -1,8 +1,8 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
-import { getMfaStatus } from './Mfa.query';
+import { ResponseStatus, useAsync } from '../lib/useAsync';
+import { getMfaStatus, MfaStatusDatatype } from './Mfa.query';
 
 const ALLOWED_KEY = Array.from({ length: 10 }, (_, i) => i.toString()).concat([
-  // 'Backspace', 'Delete',
   '',
 ]);
 
@@ -88,12 +88,8 @@ const MfaTiles: FC<MfaTilesProps> = ({ length }) => {
     </>
   );
 };
-
-type MfaWrapperProps = {
-  children?: ReactNode;
-};
-
-export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
+type MfaProps = MfaTilesProps;
+const Mfa: FC<MfaProps> = ({ length }) => {
   const [timer, setTimer] = useState(30);
   useEffect(() => {
     let reduceTimer: NodeJS.Timer;
@@ -102,30 +98,35 @@ export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
     }
     return () => clearInterval(reduceTimer);
   }, [timer]);
-  const [isLoaded, setIsLoaded] = useState(false);
-  const [isMfaAuthenticated, setIsMfaAuthenticated] = useState(false);
-  const [codeLength, setCodeLength] = useState(0);
-  useEffect(() => {
-    const getData = async () => {
-      const data = await getMfaStatus();
-      if (data) {
-        setIsMfaAuthenticated(data?.isMfaAuthenticated);
-        setCodeLength(data?.mfaCodeLength ?? 0);
-        setIsLoaded(true);
+  return (
+    <>
+      <MfaTiles length={length} />
+      <p>Timer {timer} second(s)</p>
+    </>
+  );
+};
+
+type MfaWrapperProps = {
+  children?: ReactNode;
+};
+
+export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
+  const { data, status } = useAsync<MfaStatusDatatype>(getMfaStatus, []);
+  console.log({ data, type: status });
+
+  switch (status) {
+    case ResponseStatus.Pending: {
+      return <p>Loading...</p>;
+    }
+    case ResponseStatus.Reject: {
+      return <p>Error {data.toString()}</p>;
+    }
+    case ResponseStatus.Resolved: {
+      const { isMfaAuthenticated, mfaCodeLength } = data;
+      if (!isMfaAuthenticated) {
+        return <Mfa length={mfaCodeLength} />;
       }
-    };
-    getData();
-  }, []);
-  if (!isLoaded) {
-    return <p>Loading...</p>;
+      return <div>{children}</div>;
+    }
   }
-  if (!isMfaAuthenticated) {
-    return (
-      <>
-        <MfaTiles length={codeLength} />
-        <p>Timer {timer} second(s)</p>
-      </>
-    );
-  }
-  return <div>{children}</div>;
 };

@@ -20,8 +20,9 @@ app.get('/test', (req, res, next) => {
   return res.send({ test: '123' });
 });
 app.get('/mfa/status', (req, res) => {
-  return res.send({ isMfaAuthenticated: false, mfaCodeLength: 6 });
+  // return res.send({ isMfaAuthenticated: false, mfaCodeLength: 6 });
   // return res.send({ isMfaAuthenticated: true });
+  return res.status(404).send();
 });
 
 app.listen(port, () => {

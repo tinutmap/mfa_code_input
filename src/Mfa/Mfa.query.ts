@@ -11,11 +11,10 @@ export type MfaStatusDatatype = {
   mfaCodeLength: number;
 };
 
-export const getMfaStatus = (): Promise<void | MfaStatusDatatype> => {
-  return fetch('http://localhost:3000/mfa/status')
-    .then((res) => res.json() as Promise<MfaStatusDatatype>)
-    .then((result) => {
-      return result;
-    })
-    .catch((err) => console.log(err));
+export const getMfaStatus = async (): Promise<MfaStatusDatatype> => {
+  // NOTE: no error try/catch here as it errors handler in useAsync
+  const res = await fetch('http://localhost:3000/mfa/status');
+  if (res.ok) {
+    return res.json() as Promise<MfaStatusDatatype>;
+  } else throw new Error(`STATUS ${res.status}: ${res.statusText}`);
 };
