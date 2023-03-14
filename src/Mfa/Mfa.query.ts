@@ -12,20 +12,7 @@ export type MfaStatusDatatype = {
 };
 
 export const getMfaStatus = async (): Promise<MfaStatusDatatype> => {
-  // return fetch('http://localhost:3000/mfa/status')
-  //   .then((res) => {
-  //     try {
-  //       if (res.ok) {
-  //         return res.json() as Promise<MfaStatusDatatype>;
-  //       }
-  //       throw new Error(res.status.toString());
-  //     } catch (err) {
-  //       throw new Error(err as string);
-  //     }
-  //   })
-  //   .catch((error) => {
-  //     throw new Error(error as string);
-  //   });
+  // NOTE: no error try/catch here as it errors handler in useAsync
   const res = await fetch('http://localhost:3000/mfa/status');
   if (res.ok) {
     return res.json() as Promise<MfaStatusDatatype>;

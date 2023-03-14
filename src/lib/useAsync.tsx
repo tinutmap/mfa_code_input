@@ -23,11 +23,12 @@ function reducerFunc(state: stateType, action: stateType) {
       });
     }
   }
-  // return initialState;
 }
 
 interface stateType {
   status: ResponseStatus;
+  // NOTE: can pass stateType<T> to data: T if more time to research.
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 }
 
@@ -36,17 +37,6 @@ export enum ResponseStatus {
   Reject = 'REJECT',
   Pending = 'PENDING',
 }
-
-// const initialState: stateType = {
-//   type: ResponseType.Pending,
-//   data: undefined,
-//   //   status: undefined,
-// };
-
-// interface useAsyncProps {
-//   func: () => Promise<stateType>;
-//   dependencyArray: any[];
-// }
 
 export function useAsync<T>(
   callBackFn: () => Promise<T>,
