@@ -11,11 +11,19 @@ export type MfaStatusDatatype = {
   mfaCodeLength: number;
 };
 
-export const getMfaStatus = (): Promise<void | MfaStatusDatatype> => {
+export const getMfaStatus = (): Promise<MfaStatusDatatype> => {
   return fetch('http://localhost:3000/mfa/status')
-    .then((res) => res.json() as Promise<MfaStatusDatatype>)
-    .then((result) => {
-      return result;
+    .then((res) => {
+      try {
+        if (res.ok) {
+          return res.json() as Promise<MfaStatusDatatype>;
+        }
+        throw new Error(res.status.toString());
+      } catch (err) {
+        throw new Error(err as string);
+      }
     })
-    .catch((err) => console.log(err));
+    .catch((error) => {
+      throw new Error(error as string);
+    });
 };
