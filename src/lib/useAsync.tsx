@@ -27,7 +27,7 @@ function reducerFunc(state: stateType, action: stateType) {
 
 interface stateType {
   status: ResponseStatus;
-  // NOTE: can pass stateType<T> to data: T if more time to research.
+  // TODO: [MFA-3] can pass stateType<T> to data: T if more time to research.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: any;
 }
