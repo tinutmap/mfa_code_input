@@ -146,9 +146,9 @@ export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
       return <p>Error {data.toString()}</p>;
     }
     case ResponseStatus.Resolved: {
-      const { isMfaAuthenticated, codeLength } = data;
+      const { isMfaAuthenticated, mfaCodeLength } = data;
       if (!isMfaAuthenticated) {
-        return <Mfa length={codeLength} />;
+        return <Mfa length={mfaCodeLength} />;
         // (
         //   <>
         //     <MfaTiles length={codeLength} />

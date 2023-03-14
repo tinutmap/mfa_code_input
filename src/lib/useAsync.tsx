@@ -65,8 +65,8 @@ export function useAsync<T>(
         dispatch({ status: ResponseStatus.Resolved, data: result });
       })
       .catch((e) => {
-        dispatch({ status: ResponseStatus.Reject, data: e });
+        dispatch({ status: ResponseStatus.Reject, data: e.message });
       });
   }, dependencyArray);
-  return { ...state };
+  return { ...state, data: state.data as T };
 }
