@@ -1,10 +1,13 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
+import { createDbConnection } from './lib/database/database';
 
 dotenv.config({ path: '.env.development.local', debug: true });
 
 const app: Express = express();
 const port = process.env.BACKEND_PORT;
+
+export const db = createDbConnection();
 
 app.get('/*', (_, res, next) => {
   res.set('Access-Control-Allow-Origin', 'http://localhost:8080');
