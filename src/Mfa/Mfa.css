@@ -1,0 +1,8 @@
+.mfa-tile {
+    height: 50px;
+    width: 50px;
+    font-size: 20px;
+    text-align: center;
+    margin: 10px;
+    border-radius: 5px;
+}

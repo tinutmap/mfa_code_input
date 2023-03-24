@@ -1,6 +1,7 @@
 import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
 import { ResponseStatus, useAsync } from '../lib/useAsync';
 import { getMfaStatus, MfaStatusDatatype } from './Mfa.query';
+import './Mfa.css';
 
 const ALLOWED_KEY = Array.from({ length: 10 }, (_, i) => i.toString()).concat([
   '',
@@ -62,6 +63,7 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
       onChange={(e) => updateCode(e.target.value)}
       onKeyDown={(event) => handleKeyDown(event)}
       ref={tileRef}
+      className="mfa-tile"
     />
   );
 };
