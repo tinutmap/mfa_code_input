@@ -7,7 +7,7 @@ export async function createMfaCode() {
   const code = Math.floor(Math.random() * upperRandomBound)
     .toString()
     .padStart(CODE_LENGTH, '0');
-  const currentDateTime = new Date(Date.now()).toUTCString();
+  // const currentDateTime = new Date(Date.now()).toUTCString();
   //   const sql = `
   //         INSERT INTO MfaRecords (code, created_time)
   //         VALUES (${code}, '${currentDateTime}')
