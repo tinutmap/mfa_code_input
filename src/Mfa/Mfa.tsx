@@ -17,8 +17,8 @@ const ALLOWED_KEY = Array.from({ length: 10 }, (_, i) => i.toString()).concat([
 type MfaCodeDigitTileProps = {
   index: number;
   digit: string;
-  setCode: React.Dispatch<React.SetStateAction<string[]>>;
-  setCurrentTileIndex: React.Dispatch<React.SetStateAction<number>>;
+  setCode: Dispatch<React.SetStateAction<string[]>>;
+  setCurrentTileIndex: Dispatch<React.SetStateAction<number>>;
   isCurrentTile: boolean;
 };
 
@@ -76,12 +76,10 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
 };
 
 type MfaTilesProps = {
-  // length: number;
   code: string[];
   setCode: Dispatch<React.SetStateAction<string[]>>;
 };
 const MfaTiles: FC<MfaTilesProps> = ({ code, setCode }) => {
-  // const [code, setCode] = useState(Array.from({ length: length }, () => ''));
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
 
   return (

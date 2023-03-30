@@ -18,6 +18,7 @@ app.get('/*', (_, res, next) => {
 
 app.options('/*', (_, res, next) => {
   res.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+  res.set('Access-Control-Allow-Headers', '*');
   next();
 });
 app.post('/*', (_, res, next) => {

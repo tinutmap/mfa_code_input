@@ -22,11 +22,10 @@ export const getMfaStatus = async (): Promise<MfaStatusDatatype> => {
 export const submitMfaCode = async (mfaCode: string) => {
   const res = await fetch('http://localhost:3000/mfa/submit-mfa-code', {
     method: 'POST',
-    // headers: {
-    //   'Content-type': 'application/json; charset=UTF-8',
-    // },
+    headers: {
+      'Content-type': 'application/json; charset=UTF-8',
+    },
     body: JSON.stringify({ mfaCode }),
-    // mode: 'no-cors',
   });
   if (res.ok) {
     return true;
