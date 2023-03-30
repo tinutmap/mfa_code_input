@@ -1,6 +1,13 @@
-import React, { FC, ReactNode, useEffect, useRef, useState } from 'react';
+import React, {
+  FC,
+  ReactNode,
+  useEffect,
+  useRef,
+  useState,
+  Dispatch,
+} from 'react';
 import { ResponseStatus, useAsync } from '../lib/useAsync';
-import { getMfaStatus, MfaStatusDatatype } from './Mfa.query';
+import { getMfaStatus, MfaStatusDatatype, submitMfaCode } from './Mfa.query';
 import './Mfa.css';
 
 const ALLOWED_KEY = Array.from({ length: 10 }, (_, i) => i.toString()).concat([
@@ -10,8 +17,8 @@ const ALLOWED_KEY = Array.from({ length: 10 }, (_, i) => i.toString()).concat([
 type MfaCodeDigitTileProps = {
   index: number;
   digit: string;
-  setCode: React.Dispatch<React.SetStateAction<string[]>>;
-  setCurrentTileIndex: React.Dispatch<React.SetStateAction<number>>;
+  setCode: Dispatch<React.SetStateAction<string[]>>;
+  setCurrentTileIndex: Dispatch<React.SetStateAction<number>>;
   isCurrentTile: boolean;
 };
 
@@ -69,10 +76,10 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
 };
 
 type MfaTilesProps = {
-  length: number;
+  code: string[];
+  setCode: Dispatch<React.SetStateAction<string[]>>;
 };
-const MfaTiles: FC<MfaTilesProps> = ({ length }) => {
-  const [code, setCode] = useState(Array.from({ length: length }, () => ''));
+const MfaTiles: FC<MfaTilesProps> = ({ code, setCode }) => {
   const [currentTileIndex, setCurrentTileIndex] = useState(0);
 
   return (
@@ -90,8 +97,11 @@ const MfaTiles: FC<MfaTilesProps> = ({ length }) => {
     </>
   );
 };
-type MfaProps = MfaTilesProps;
-const Mfa: FC<MfaProps> = ({ length }) => {
+type MfaProps = {
+  length: number;
+  setDoRefetchMfaStatus: Dispatch<React.SetStateAction<boolean>>;
+};
+const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
   const [timer, setTimer] = useState(30);
   useEffect(() => {
     let reduceTimer: NodeJS.Timer;
@@ -100,9 +110,23 @@ const Mfa: FC<MfaProps> = ({ length }) => {
     }
     return () => clearInterval(reduceTimer);
   }, [timer]);
+
+  const [code, setCode] = useState(Array.from({ length: length }, () => ''));
+
   return (
     <>
-      <MfaTiles length={length} />
+      <MfaTiles code={code} setCode={setCode} />
+      <div>
+        <button
+          onClick={async () => {
+            if (await submitMfaCode(code.toString())) {
+              setDoRefetchMfaStatus((state) => !state);
+            }
+          }}
+        >
+          Submit MFA Code
+        </button>
+      </div>
       <p>Timer {timer} second(s)</p>
     </>
   );
@@ -113,7 +137,10 @@ type MfaWrapperProps = {
 };
 
 export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
-  const { data, status } = useAsync<MfaStatusDatatype>(getMfaStatus, []);
+  const [doRefetchMfaStatus, setDoRefetchMfaStatus] = useState(false);
+  const { data, status } = useAsync<MfaStatusDatatype>(getMfaStatus, [
+    doRefetchMfaStatus,
+  ]);
   console.log({ data, type: status });
 
   switch (status) {
@@ -126,7 +153,12 @@ export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
     case ResponseStatus.Resolved: {
       const { isMfaAuthenticated, mfaCodeLength } = data;
       if (!isMfaAuthenticated) {
-        return <Mfa length={mfaCodeLength} />;
+        return (
+          <Mfa
+            length={mfaCodeLength}
+            setDoRefetchMfaStatus={setDoRefetchMfaStatus}
+          />
+        );
       }
       return <div>{children}</div>;
     }

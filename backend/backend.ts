@@ -16,6 +16,16 @@ app.get('/*', (_, res, next) => {
   next();
 });
 
+app.options('/*', (_, res, next) => {
+  res.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+  res.set('Access-Control-Allow-Headers', '*');
+  next();
+});
+app.post('/*', (_, res, next) => {
+  res.set('Access-Control-Allow-Origin', 'http://localhost:8080');
+  next();
+});
+
 app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
@@ -31,8 +41,10 @@ app.get('/mfa/status', async (req, res) => {
   } else {
     await createMfaCode();
     return res.send({ isMfaAuthenticated: false, mfaCodeLength: 6 });
-    // return res.status(404).send();
   }
+});
+app.post('/mfa/submit-mfa-code', async (req, res) => {
+  return res.sendStatus(200);
 });
 
 app.listen(port, () => {
