@@ -1,5 +1,6 @@
 import { db } from '../../backend';
 // import RunResult
+import { MOCKED_USER_ID, MOCKED_SESSION_ID } from './constants';
 
 export async function createMfaCode() {
   const CODE_LENGTH = 6;
@@ -7,15 +8,21 @@ export async function createMfaCode() {
   const code = Math.floor(Math.random() * upperRandomBound)
     .toString()
     .padStart(CODE_LENGTH, '0');
-  // const currentDateTime = new Date(Date.now()).toUTCString();
-  //   const sql = `
-  //         INSERT INTO MfaRecords (code, created_time)
-  //         VALUES (${code}, '${currentDateTime}')
-  //     `;
 
   const sql = `
-    INSERT INTO MfaRecords (code)
-    VALUES (${code})
+    INSERT INTO MfaCodeRecords (user_id, session_id, code)
+    VALUES (
+      '${MOCKED_USER_ID}',
+      '${MOCKED_SESSION_ID}',
+      ${code}
+    )
+    ON CONFLICT(user_id, session_id) DO
+    UPDATE SET
+      code = ${code},
+      created_time = CURRENT_TIMESTAMP
+    WHERE
+      user_id = '${MOCKED_USER_ID}' AND
+      session_id = '${MOCKED_SESSION_ID}'
 `;
 
   await new Promise((resolve, reject) => {
@@ -23,7 +30,7 @@ export async function createMfaCode() {
       if (err) {
         return reject(console.log(err.message));
       } else {
-        resolve(console.log('code created successfully'));
+        resolve(console.log('code created/updated successfully'));
       }
     });
   });
