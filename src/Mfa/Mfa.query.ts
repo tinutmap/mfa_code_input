@@ -18,3 +18,18 @@ export const getMfaStatus = async (): Promise<MfaStatusDatatype> => {
     return res.json() as Promise<MfaStatusDatatype>;
   } else throw new Error(`STATUS ${res.status}: ${res.statusText}`);
 };
+
+export const submitMfaCode = async (mfaCode: string) => {
+  const res = await fetch('http://localhost:3000/mfa/submit-mfa-code', {
+    method: 'POST',
+    // headers: {
+    //   'Content-type': 'application/json; charset=UTF-8',
+    // },
+    body: JSON.stringify({ mfaCode }),
+    // mode: 'no-cors',
+  });
+  if (res.ok) {
+    return true;
+  }
+  return false;
+};

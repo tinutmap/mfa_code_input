@@ -40,7 +40,7 @@ export enum ResponseStatus {
 
 export function useAsync<T>(
   asyncCallBackFn: () => Promise<T>,
-  dependencyArray: [],
+  dependencyArray: unknown[],
   initialState?: T
 ) {
   const [state, dispatch] = useReducer(reducerFunc, {
