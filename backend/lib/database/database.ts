@@ -12,28 +12,49 @@ export function createDbConnection() {
       if (error) {
         return console.error(error.message);
       }
-      await createTable(db);
+      await createTables(db);
     });
     console.log('Connection with SQLite has been established');
     return db;
   }
 }
 
-async function createTable(db: sqlite3.Database) {
-  const sql = `
-  CREATE TABLE MfaRecords
+async function createTables(db: sqlite3.Database) {
+  const sqlStatements = [
+    `
+  CREATE TABLE MfaCodeRecords
   (
     ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id VARCHAR NOT NULL,
+    session_id VARCHAR NOT NULL,
     code VARCHAR(10) NOT NULL,
-    created_time TEXT DEFAULT CURRENT_TIMESTAMP 
+    created_time TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id,session_id)
   );
-`;
-  return new Promise((resolve, reject) =>
-    db.exec(sql, (error) => {
-      if (error) {
-        return reject(console.log(error.message));
-      }
-      return resolve(console.log('Table created OK'));
-    })
+`,
+    `
+  CREATE TABLE MfaAuthenticationSessionRecords
+  (
+    ID INTEGER PRIMARY KEY AUTOINCREMENT,
+    user_id VARCHAR NOT NULL,
+    session_id VARCHAR NOT NULL,
+    authenticated_time TEXT DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id,session_id)
+  );
+`,
+  ];
+
+  Promise.all(
+    sqlStatements.map(
+      (sql) =>
+        new Promise((resolve, reject) => {
+          db.exec(sql, (error) => {
+            if (error) {
+              return reject(console.log(error.message));
+            }
+            return resolve(console.log('Table created OK'));
+          });
+        })
+    )
   );
 }

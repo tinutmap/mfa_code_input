@@ -1,5 +1,6 @@
 // import { resolve } from 'path';
 import { db } from '../../backend';
+import { MOCKED_USER_ID, MOCKED_SESSION_ID } from './constants';
 
 export async function checkMfaStatus(): Promise<number> {
   // res: Response,
@@ -11,9 +12,12 @@ export async function checkMfaStatus(): Promise<number> {
         COUNT(*) count
         FROM ( 
             SELECT
-                code
-            FROM MfaRecords
-            WHERE ROUND((JULIANDAY('now') - JULIANDAY(created_time )) * 86400) < ${TIME_LIMIT_IN_SECONDS}
+                *
+            FROM MfaAuthenticationSessionRecords
+            WHERE
+              ROUND((JULIANDAY('now') - JULIANDAY(authenticated_time)) * 86400) < ${TIME_LIMIT_IN_SECONDS} AND
+              user_id = '${MOCKED_USER_ID}' AND
+              session_id = '${MOCKED_SESSION_ID}'
         )
     `;
   interface RowCount {
