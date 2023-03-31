@@ -39,11 +39,15 @@ app.get('/mfa/status', async (req, res) => {
   if (count > 0) {
     return res.send({ isMfaAuthenticated: true });
   } else {
-    await createMfaCode();
     return res.send({ isMfaAuthenticated: false, mfaCodeLength: 6 });
   }
 });
 app.post('/mfa/submit-mfa-code', async (req, res) => {
+  return res.sendStatus(200);
+});
+app.post('/mfa/send-code', async (req, res, next) => {
+  // const testMessageUrl = await createMfaCode();
+  // res.redirect(testMessageUrl as string);
   return res.sendStatus(200);
 });
 

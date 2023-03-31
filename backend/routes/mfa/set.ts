@@ -3,48 +3,52 @@ import { MOCKED_USER_ID, MOCKED_SESSION_ID } from './constants';
 import nodemailer from 'nodemailer';
 
 async function sendEmail(code: string) {
-  nodemailer.createTestAccount(async (err, account) => {
-    if (err) {
-      console.error('Failed to create a testing account. ' + err.message);
-      return process.exit(1);
-    }
-
-    console.log('Credentials obtained, sending message...');
-
-    // Create a SMTP transporter object
-    const transporter = nodemailer.createTransport({
-      host: account.smtp.host,
-      port: account.smtp.port,
-      secure: account.smtp.secure,
-      auth: {
-        user: account.user,
-        pass: account.pass,
-      },
-    });
-
-    // Message object
-    const message = {
-      from: 'admin@mfa-test.com',
-      to: 'user@mfa-test.com',
-      subject: 'MFA Code',
-      text: `MFA Code ${code}. Please don't share it with anyone.`,
-    };
-
-    await transporter.sendMail(
-      message,
-      (err: Error, info: { messageId: string }) => {
-        if (err) {
-          console.log('Error occurred. ' + err.message);
-          return process.exit(1);
-        }
-
-        console.log('Message sent: %s', info.messageId);
-        // Preview only available when sending through an Ethereal account
-        // NOTE: access to email in Debug Console
-        console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
+  return new Promise((resolve, reject) =>
+    nodemailer.createTestAccount(async (err, account) => {
+      if (err) {
+        console.error('Failed to create a testing account. ' + err.message);
+        return process.exit(1);
       }
-    );
-  });
+
+      console.log('Credentials obtained, sending message...');
+
+      // Create a SMTP transporter object
+      const transporter = nodemailer.createTransport({
+        host: account.smtp.host,
+        port: account.smtp.port,
+        secure: account.smtp.secure,
+        auth: {
+          user: account.user,
+          pass: account.pass,
+        },
+      });
+
+      // Message object
+      const message = {
+        from: 'admin@mfa-test.com',
+        to: 'user@mfa-test.com',
+        subject: 'MFA Code',
+        text: `MFA Code ${code}. Please don't share it with anyone.`,
+      };
+
+      return await transporter.sendMail(
+        message,
+        (err: Error, info: { messageId: string }) => {
+          if (err) {
+            reject(console.log('Error occurred. ' + err.message));
+            return process.exit(1);
+          }
+
+          console.log('Message sent: %s', info.messageId);
+          // Preview only available when sending through an Ethereal account
+          // NOTE: access to email in Debug Console
+          const testMessageUrl = nodemailer.getTestMessageUrl(info);
+          console.log('Preview URL: %s', testMessageUrl);
+          resolve(testMessageUrl);
+        }
+      );
+    })
+  );
 }
 
 export async function createMfaCode() {
@@ -54,7 +58,7 @@ export async function createMfaCode() {
     .toString()
     .padStart(CODE_LENGTH, '0');
 
-  await sendEmail(code);
+  const testMessageUrl = await sendEmail(code);
   const sql = `
     INSERT INTO MfaCodeRecords (user_id, session_id, code)
     VALUES (
@@ -71,12 +75,13 @@ export async function createMfaCode() {
       session_id = '${MOCKED_SESSION_ID}'
 `;
 
-  await new Promise((resolve, reject) => {
+  return await new Promise((resolve, reject) => {
     db.run(sql, async function (err) {
       if (err) {
         return reject(console.log(err.message));
       } else {
-        resolve(console.log('code created/updated successfully'));
+        console.log('code created/updated successfully');
+        resolve(testMessageUrl);
       }
     });
   });
