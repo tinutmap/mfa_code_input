@@ -134,7 +134,7 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
           <div>
             <button
               onClick={async () => {
-                if (await submitMfaCode(code.toString())) {
+                if (await submitMfaCode(code.join(''))) {
                   setDoRefetchMfaStatus((state) => !state);
                 }
               }}
