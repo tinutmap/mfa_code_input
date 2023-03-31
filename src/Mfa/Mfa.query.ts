@@ -32,3 +32,12 @@ export const submitMfaCode = async (mfaCode: string) => {
   }
   return false;
 };
+
+export const sendMfaCode = async () => {
+  const res = await fetch('http://localhost:3000/mfa/send-code', {
+    method: 'POST',
+  });
+  if (res.ok) {
+    return true;
+  } else throw new Error(`STATUS ${res.status}: ${res.statusText}`);
+};
