@@ -86,3 +86,29 @@ export async function createMfaCode() {
     });
   });
 }
+
+export async function createMfaAuthenticationSessions() {
+  const sql = `
+    INSERT INTO MfaAuthenticationSessionRecords (user_id, session_id)
+    VALUES (
+      '${MOCKED_USER_ID}',
+      '${MOCKED_SESSION_ID}'
+    )
+    ON CONFLICT(user_id, session_id) DO
+    UPDATE SET
+      authenticated_time = CURRENT_TIMESTAMP
+    WHERE
+      user_id = '${MOCKED_USER_ID}' AND
+      session_id = '${MOCKED_SESSION_ID}'
+`;
+
+  return await new Promise((resolve, reject) => {
+    db.run(sql, async function (err) {
+      if (err) {
+        return reject(console.log(err.message));
+      } else {
+        resolve(console.log('session created/updated successfully'));
+      }
+    });
+  });
+}
