@@ -7,7 +7,12 @@ import React, {
   Dispatch,
 } from 'react';
 import { ResponseStatus, useAsync } from '../lib/useAsync';
-import { getMfaStatus, MfaStatusDatatype, submitMfaCode } from './Mfa.query';
+import {
+  getMfaStatus,
+  MfaStatusDatatype,
+  submitMfaCode,
+  sendMfaCode,
+} from './Mfa.query';
 import './Mfa.css';
 
 const ALLOWED_KEY = Array.from({ length: 10 }, (_, i) => i.toString()).concat([
@@ -113,23 +118,35 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
 
   const [code, setCode] = useState(Array.from({ length: length }, () => ''));
 
-  return (
-    <>
-      <MfaTiles code={code} setCode={setCode} />
-      <div>
-        <button
-          onClick={async () => {
-            if (await submitMfaCode(code.toString())) {
-              setDoRefetchMfaStatus((state) => !state);
-            }
-          }}
-        >
-          Submit MFA Code
-        </button>
-      </div>
-      <p>Timer {timer} second(s)</p>
-    </>
-  );
+  const { data, status } = useAsync(sendMfaCode, []);
+
+  switch (status) {
+    case ResponseStatus.Pending: {
+      return <p>Loading...</p>;
+    }
+    case ResponseStatus.Reject: {
+      return <p>Error {data.toString()}</p>;
+    }
+    case ResponseStatus.Resolved: {
+      return (
+        <>
+          <MfaTiles code={code} setCode={setCode} />
+          <div>
+            <button
+              onClick={async () => {
+                if (await submitMfaCode(code.toString())) {
+                  setDoRefetchMfaStatus((state) => !state);
+                }
+              }}
+            >
+              Submit MFA Code
+            </button>
+          </div>
+          <p>Timer {timer} second(s)</p>
+        </>
+      );
+    }
+  }
 };
 
 type MfaWrapperProps = {
