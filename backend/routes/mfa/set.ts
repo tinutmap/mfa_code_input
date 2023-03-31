@@ -40,6 +40,7 @@ async function sendEmail(code: string) {
 
         console.log('Message sent: %s', info.messageId);
         // Preview only available when sending through an Ethereal account
+        // NOTE: access to email in Debug Console
         console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
       }
     );
