@@ -23,8 +23,9 @@ type MfaCodeDigitTileProps = {
   index: number;
   digit: string;
   setCode: Dispatch<React.SetStateAction<string[]>>;
-  setCurrentTileIndex: Dispatch<React.SetStateAction<number>>;
+  // setCurrentTileIndex: Dispatch<React.SetStateAction<number>>;
   isCurrentTile: boolean;
+  currentTileIndex: React.MutableRefObject<number>;
 };
 
 const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
@@ -32,7 +33,8 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
   digit,
   setCode,
   isCurrentTile,
-  setCurrentTileIndex,
+  // setCurrentTileIndex,
+  currentTileIndex,
 }) => {
   const updateCode = (value: string) => {
     if (ALLOWED_KEY.includes(value)) {
@@ -40,7 +42,8 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
         const newCode = code;
         newCode[index] = value;
         if (value !== '') {
-          setCurrentTileIndex(index + 1);
+          // setCurrentTileIndex(index + 1);
+          currentTileIndex.current = index + 1;
         }
         return [...newCode];
       });
@@ -54,7 +57,9 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
       if (digit) return;
       if (!digit) {
         event.preventDefault();
-        return setCurrentTileIndex(index - 1);
+        currentTileIndex.current = index - 1;
+        return;
+        // return setCurrentTileIndex(index - 1);
       }
     }
   };
@@ -85,7 +90,8 @@ type MfaTilesProps = {
   setCode: Dispatch<React.SetStateAction<string[]>>;
 };
 const MfaTiles: FC<MfaTilesProps> = ({ code, setCode }) => {
-  const [currentTileIndex, setCurrentTileIndex] = useState(0);
+  // const [currentTileIndex, setCurrentTileIndex] = useState(0);
+  const currentTileIndex = useRef(0);
 
   return (
     <>
@@ -95,8 +101,9 @@ const MfaTiles: FC<MfaTilesProps> = ({ code, setCode }) => {
           index={index}
           digit={digit}
           setCode={setCode}
-          isCurrentTile={currentTileIndex === index}
-          setCurrentTileIndex={setCurrentTileIndex}
+          isCurrentTile={currentTileIndex.current === index}
+          // setCurrentTileIndex={setCurrentTileIndex}
+          currentTileIndex={currentTileIndex}
         />
       ))}
     </>
