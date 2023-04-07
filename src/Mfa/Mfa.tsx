@@ -23,7 +23,6 @@ type MfaCodeDigitTileProps = {
   index: number;
   digit: string;
   setCode: Dispatch<React.SetStateAction<string[]>>;
-  // setCurrentTileIndex: Dispatch<React.SetStateAction<number>>;
   isCurrentTile: boolean;
   currentTileIndex: React.MutableRefObject<number>;
 };
@@ -33,7 +32,6 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
   digit,
   setCode,
   isCurrentTile,
-  // setCurrentTileIndex,
   currentTileIndex,
 }) => {
   const updateCode = (value: string) => {
@@ -42,7 +40,6 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
         const newCode = code;
         newCode[index] = value;
         if (value !== '') {
-          // setCurrentTileIndex(index + 1);
           currentTileIndex.current = index + 1;
         }
         return [...newCode];
@@ -59,7 +56,6 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
         event.preventDefault();
         currentTileIndex.current = index - 1;
         return;
-        // return setCurrentTileIndex(index - 1);
       }
     }
   };
@@ -90,7 +86,6 @@ type MfaTilesProps = {
   setCode: Dispatch<React.SetStateAction<string[]>>;
 };
 const MfaTiles: FC<MfaTilesProps> = ({ code, setCode }) => {
-  // const [currentTileIndex, setCurrentTileIndex] = useState(0);
   const currentTileIndex = useRef(0);
 
   return (
@@ -102,7 +97,6 @@ const MfaTiles: FC<MfaTilesProps> = ({ code, setCode }) => {
           digit={digit}
           setCode={setCode}
           isCurrentTile={currentTileIndex.current === index}
-          // setCurrentTileIndex={setCurrentTileIndex}
           currentTileIndex={currentTileIndex}
         />
       ))}
