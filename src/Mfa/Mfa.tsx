@@ -121,6 +121,13 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
 
   const { data, status } = useAsync(sendMfaCode, []);
 
+  const [errorMessage, setErrorMessage] = useState('');
+
+  useEffect(() => {
+    // NOTE: remove error message when input changes after wrong code's input
+    setErrorMessage('');
+  }, [code]);
+
   switch (status) {
     case ResponseStatus.Pending: {
       return <p>Loading...</p>;
@@ -137,12 +144,15 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
               onClick={async () => {
                 if (await submitMfaCode(code.join(''))) {
                   setDoRefetchMfaStatus((state) => !state);
+                } else {
+                  setErrorMessage('Wrong Code');
                 }
               }}
             >
               Submit MFA Code
             </button>
           </div>
+          {errorMessage && <div>{errorMessage}</div>}
           <p>Timer {timer} second(s)</p>
         </>
       );
