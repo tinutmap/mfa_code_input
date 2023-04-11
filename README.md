@@ -32,7 +32,8 @@ The scope of this project does not include or intend to venture in encryption te
   - Run `npm run backend-debug` to start the Backend
 
 - Optionally, in VSCode Debug, Select `Run both-end`
-  ![Run both_end debug](https://github.com/tinutmap/mfa_code_input/blob/master/public/run_both_ends_debug.png?raw=true)
+
+![Run both_end debug](https://github.com/tinutmap/mfa_code_input/blob/master/public/run_both_ends_debug.png?raw=true)
 
 # References:
 
