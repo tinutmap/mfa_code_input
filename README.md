@@ -1,13 +1,13 @@
-To play with React from setting up to writing a simple front end for MFA code input
+# Objectives:
+This project showcases the author's Web Development capabilities by building a Multi Factor Authentication (MFA) mechanism with:
+- React Frontend: techniques and best practices, especially various use cases of React Hooks in  UI.
+- Node Express Backend for authentication process. It also equips with capability to send MFA code to user, and with a road map to include rate limiting to prevent user from abusing the system
 
-# Tutorial Link:
+Tech Stack: Typescript, Node Express, Sqlite database engine, React.
 
-- https://reactjs.org/docs/create-a-new-react-app.html
-- https://create-react-app.dev/docs/getting-started
-  Prerequisites:
+# Disclaimer:
+The scope of this project does not include or intend to venture in encryption techniques in masking MFA code stored in the database. It neither includes the user authentication/ user management/ session management as typically seen in production apps.
 
-- node
-- Git
 
 
 # First time setup:
@@ -19,3 +19,8 @@ To play with React from setting up to writing a simple front end for MFA code in
 - `npx create-react-app mfa_code_input --template typescript`
 - For adding ESLint and Prettier, see 'Add eslint' and 'Add prettier' commits.
 - Setup Node Express with Typescript https://blog.logrocket.com/how-to-set-up-node-typescript-express/
+
+# References:
+
+- https://reactjs.org/docs/create-a-new-react-app.html
+- https://create-react-app.dev/docs/getting-started
