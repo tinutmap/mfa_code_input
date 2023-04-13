@@ -41,10 +41,6 @@ app.get('/', (req: Request, res: Response) => {
   res.send('Express + TypeScript Server');
 });
 
-app.get('/test', (req, res, next) => {
-  console.log({ req, res, next });
-  return res.send({ test: '123' });
-});
 app.get('/mfa/status', async (req, res) => {
   const count = await checkMfaStatus();
   if (count > 0) {
