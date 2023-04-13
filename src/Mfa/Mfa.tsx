@@ -122,11 +122,27 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
   const { data, status } = useAsync(sendMfaCode, []);
 
   const [errorMessage, setErrorMessage] = useState('');
+  const [isCodeSubmittedFirstTime, setIsCodeSubmittedFirstTime] =
+    useState(false);
 
   useEffect(() => {
     // NOTE: remove error message when input changes after wrong code's input
     setErrorMessage('');
+
+    // NOTE: submit code first time after code is filled up to required length
+    if (code.join('').length === length && !isCodeSubmittedFirstTime) {
+      submitMfaCodeCallBack();
+    }
   }, [code]);
+
+  const submitMfaCodeCallBack = async () => {
+    setIsCodeSubmittedFirstTime(true);
+    if (await submitMfaCode(code.join(''))) {
+      setDoRefetchMfaStatus((state) => !state);
+    } else {
+      setErrorMessage('Wrong Code');
+    }
+  };
 
   switch (status) {
     case ResponseStatus.Pending: {
@@ -139,19 +155,13 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
       return (
         <>
           <MfaTiles code={code} setCode={setCode} />
-          <div>
-            <button
-              onClick={async () => {
-                if (await submitMfaCode(code.join(''))) {
-                  setDoRefetchMfaStatus((state) => !state);
-                } else {
-                  setErrorMessage('Wrong Code');
-                }
-              }}
-            >
-              Submit MFA Code
-            </button>
-          </div>
+          {isCodeSubmittedFirstTime && (
+            <div>
+              <button onClick={async () => await submitMfaCodeCallBack()}>
+                Submit MFA Code
+              </button>
+            </div>
+          )}
           {errorMessage && <div>{errorMessage}</div>}
           <p>Timer {timer} second(s)</p>
         </>
