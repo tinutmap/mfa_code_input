@@ -6,3 +6,8 @@
     margin: 10px;
     border-radius: 5px;
 }
+
+a {
+    text-decoration: underline;
+    cursor:pointer;
+}
