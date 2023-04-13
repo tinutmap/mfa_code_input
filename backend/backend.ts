@@ -6,6 +6,7 @@ import {
   createMfaAuthenticationSessions,
   createMfaCode,
 } from './routes/mfa/set';
+import { TIMER_DURATION_IN_MILLISECOND } from './routes/mfa/constants';
 
 dotenv.config({ path: '.env.development.local', debug: true });
 
@@ -60,7 +61,9 @@ app.post('/mfa/submit-mfa-code', async (req, res) => {
 app.post('/mfa/send-code', async (req, res, next) => {
   const testMessageUrl = await createMfaCode();
   // res.redirect(testMessageUrl as string);
-  return res.sendStatus(200);
+  return res
+    .status(200)
+    .send({ timerDurationInMillisecond: TIMER_DURATION_IN_MILLISECOND });
 });
 
 app.listen(port, () => {
