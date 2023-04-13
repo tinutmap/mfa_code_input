@@ -71,7 +71,6 @@ const MfaCodeDigitTile: FC<MfaCodeDigitTileProps> = ({
       type="text"
       minLength={1}
       maxLength={1}
-      placeholder={index.toString()}
       value={digit}
       onChange={(e) => updateCode(e.target.value)}
       onKeyDown={(event) => handleKeyDown(event)}
