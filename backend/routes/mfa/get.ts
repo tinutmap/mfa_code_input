@@ -59,3 +59,26 @@ export async function checkMfaCode(mfaCode: string) {
     });
   });
 }
+
+export async function getLastMfaCreatedTime(): Promise<string> {
+  const sql = `
+    SELECT
+      created_time
+    FROM MfaCodeRecords
+    WHERE
+      user_id = '${MOCKED_USER_ID}' AND
+      session_id = '${MOCKED_SESSION_ID}'
+`;
+
+  return await new Promise((resolve, reject) => {
+    db.get(sql, async (err, row: { created_time: string }) => {
+      if (err) {
+        reject(err.message);
+        return console.log(err.message);
+      } else {
+        const createdTime = row?.created_time;
+        resolve(createdTime);
+      }
+    });
+  });
+}
