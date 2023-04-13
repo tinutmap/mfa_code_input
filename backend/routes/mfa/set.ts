@@ -54,9 +54,8 @@ async function sendEmail(code: string) {
 export async function createMfaCode() {
   const CODE_LENGTH = 6;
   const upperRandomBound = 10 ** CODE_LENGTH;
-  const code = Math.floor(Math.random() * upperRandomBound)
-    .toString()
-    .padStart(CODE_LENGTH, '0'); // BUG: [MFA-22] padding code is still not working with codes generated with leading 0
+  let code = Math.floor(Math.random() * upperRandomBound).toString();
+  code = code.padStart(CODE_LENGTH, '0');
 
   const testMessageUrl = await sendEmail(code);
   const sql = `
