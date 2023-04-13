@@ -34,7 +34,7 @@ async function sendEmail(code: string) {
       return await transporter.sendMail(
         message,
         (err: Error, info: { messageId: string }) => {
-          // BUG: [MFA-28] fix type error flagged by Typescript
+          // FIXME: [MFA-28] fix type error flagged by Typescript
           if (err) {
             reject(console.log('Error occurred. ' + err.message));
             return process.exit(1);

@@ -1,4 +1,4 @@
-// BUG: [MFA-33] add try/catch to async queries and error handling as res.json() can potentially throws error.
+// FIXME: [MFA-33] add try/catch to async queries and error handling as res.json() can potentially throws error.
 
 // TODO: [MFA-32] remove this testFetch
 export function testFetch() {
