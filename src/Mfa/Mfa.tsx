@@ -5,7 +5,6 @@ import React, {
   useRef,
   useState,
   Dispatch,
-  useCallback,
 } from 'react';
 import { ResponseStatus, useAsync } from '../lib/useAsync';
 import {
@@ -136,19 +135,14 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
     }
   }, [code]);
 
-  const submitMfaCodeCallBack =
-    //  async () =>
-    useCallback(async () =>
-      // await submitMfaCode(code.join('')),
-      {
-        setIsCodeSubmittedFirstTime(true);
-        if (await submitMfaCode(code.join(''))) {
-          setDoRefetchMfaStatus((state) => !state);
-        } else {
-          setErrorMessage('Wrong Code');
-        }
-        // }
-      }, [code]);
+  const submitMfaCodeCallBack = async () => {
+    setIsCodeSubmittedFirstTime(true);
+    if (await submitMfaCode(code.join(''))) {
+      setDoRefetchMfaStatus((state) => !state);
+    } else {
+      setErrorMessage('Wrong Code');
+    }
+  };
 
   switch (status) {
     case ResponseStatus.Pending: {
