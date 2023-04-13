@@ -1,7 +1,11 @@
 import express, { Express, Request, Response } from 'express';
 import dotenv from 'dotenv';
 import { createDbConnection } from './lib/database/database';
-import { checkMfaCode, checkMfaStatus } from './routes/mfa/get';
+import {
+  checkMfaCode,
+  checkMfaStatus,
+  getLastMfaCreatedTime,
+} from './routes/mfa/get';
 import {
   createMfaAuthenticationSessions,
   createMfaCode,
@@ -59,11 +63,18 @@ app.post('/mfa/submit-mfa-code', async (req, res) => {
   return res.sendStatus(200);
 });
 app.post('/mfa/send-code', async (req, res, next) => {
-  const testMessageUrl = await createMfaCode();
-  // res.redirect(testMessageUrl as string);
-  return res
-    .status(200)
-    .send({ timerDurationInMillisecond: TIMER_DURATION_IN_MILLISECOND });
+  const lastMfaCodeCreatedTime = (await getLastMfaCreatedTime()) + ' UTC'; // NOTE: needed to append ' UTC' timezone here in order to parse correctly. SQLite does not carry timezone.
+  if (
+    Date.now() - Date.parse(lastMfaCodeCreatedTime) >
+    TIMER_DURATION_IN_MILLISECOND
+  ) {
+    const testMessageUrl = await createMfaCode();
+    // res.redirect(testMessageUrl as string);
+    return res
+      .status(200)
+      .send({ timerDurationInMillisecond: TIMER_DURATION_IN_MILLISECOND });
+  }
+  return res.sendStatus(401);
 });
 
 app.listen(port, () => {
