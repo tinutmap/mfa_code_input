@@ -1,6 +1,6 @@
 import { db } from '../../backend';
 import { MOCKED_USER_ID, MOCKED_SESSION_ID } from './constants';
-import nodemailer from 'nodemailer';
+import nodemailer, { SentMessageInfo } from 'nodemailer';
 
 async function sendEmail(code: string) {
   return new Promise((resolve, reject) =>
@@ -33,8 +33,7 @@ async function sendEmail(code: string) {
 
       return await transporter.sendMail(
         message,
-        (err: Error, info: { messageId: string }) => {
-          // FIXME: [MFA-28] fix type error flagged by Typescript
+        (err: Error | null, info: SentMessageInfo) => {
           if (err) {
             reject(console.log('Error occurred. ' + err.message));
             return process.exit(1);
