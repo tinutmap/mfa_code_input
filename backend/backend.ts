@@ -63,10 +63,12 @@ app.post('/mfa/submit-mfa-code', async (req, res) => {
   return res.sendStatus(200);
 });
 app.post('/mfa/send-code', async (req, res, next) => {
-  const lastMfaCodeCreatedTime = (await getLastMfaCreatedTime()) + ' UTC'; // NOTE: needed to append ' UTC' timezone here in order to parse correctly. SQLite does not carry timezone.
+  let lastMfaCodeCreatedTime = await getLastMfaCreatedTime();
+  if (lastMfaCodeCreatedTime) lastMfaCodeCreatedTime += ' UTC'; // NOTE: needed to append ' UTC' timezone here in order to parse correctly. SQLite does not carry timezone.
   if (
+    !lastMfaCodeCreatedTime || // NOTE: this condition covers the case no MfaCode has ever generated.
     Date.now() - Date.parse(lastMfaCodeCreatedTime) >
-    TIMER_DURATION_IN_MILLISECOND
+      TIMER_DURATION_IN_MILLISECOND
   ) {
     const testMessageUrl = await createMfaCode();
     // res.redirect(testMessageUrl as string);
