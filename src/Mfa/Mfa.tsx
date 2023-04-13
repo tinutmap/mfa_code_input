@@ -173,7 +173,13 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
             <p>Request new code in {timerInSeconds} second(s)</p>
           ) : (
             <div>
-              <a role="button" onClick={async () => await sendMfaCode()}>
+              <a
+                role="button"
+                onClick={async () => {
+                  setTimerInSeconds(-1);
+                  await sendMfaCode();
+                }}
+              >
                 Resend Code
               </a>
             </div>
