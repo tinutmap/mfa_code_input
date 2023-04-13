@@ -108,14 +108,17 @@ type MfaProps = {
   setDoRefetchMfaStatus: Dispatch<React.SetStateAction<boolean>>;
 };
 const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
-  const [timer, setTimer] = useState(30);
+  const [timerInSeconds, setTimerInSeconds] = useState(-1); // NOTE: timer set to -1 denotes timer hasn't been set, to differentiate from timer === 0 which means it has expired
   useEffect(() => {
     let reduceTimer: NodeJS.Timer;
-    if (timer > 0) {
-      reduceTimer = setInterval(() => setTimer((time) => time - 1), 1000);
+    if (timerInSeconds > 0) {
+      reduceTimer = setInterval(
+        () => setTimerInSeconds((time) => time - 1),
+        1000
+      );
     }
     return () => clearInterval(reduceTimer);
-  }, [timer]);
+  }, [timerInSeconds]);
 
   const [code, setCode] = useState(Array.from({ length: length }, () => ''));
 
@@ -152,6 +155,9 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
       return <p>Error {data.toString()}</p>;
     }
     case ResponseStatus.Resolved: {
+      if (timerInSeconds === -1) {
+        setTimerInSeconds(data.timerDurationInMillisecond / 1000);
+      }
       return (
         <>
           <MfaTiles code={code} setCode={setCode} />
@@ -163,8 +169,8 @@ const Mfa: FC<MfaProps> = ({ length, setDoRefetchMfaStatus }) => {
             </div>
           )}
           {errorMessage && <div>{errorMessage}</div>}
-          {timer > 0 ? (
-            <p>Request new code in {timer} second(s)</p>
+          {timerInSeconds > 0 ? (
+            <p>Request new code in {timerInSeconds} second(s)</p>
           ) : (
             <div>
               <a role="button" onClick={async () => await sendMfaCode()}>
