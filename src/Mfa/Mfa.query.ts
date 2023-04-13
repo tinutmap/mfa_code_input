@@ -1,3 +1,6 @@
+// BUG: [MFA-33] add try/catch to async queries and error handling as res.json() can potentially throws error.
+
+// TODO: [MFA-32] remove this testFetch
 export function testFetch() {
   fetch('http://localhost:3000/test')
     .then((res) => res.json())
