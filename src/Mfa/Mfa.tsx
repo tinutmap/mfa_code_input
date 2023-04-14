@@ -205,7 +205,7 @@ export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
       return <p>Loading...</p>;
     }
     case ResponseStatus.Reject: {
-      return <p>Error {data.toString()}</p>;
+      throw new Error(data.toString());
     }
     case ResponseStatus.Resolved: {
       const { isMfaAuthenticated, mfaCodeLength } = data;
