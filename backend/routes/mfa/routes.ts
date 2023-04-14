@@ -6,6 +6,7 @@ import { TIMER_DURATION_IN_MILLISECOND } from './constants';
 const router = express.Router();
 
 router.get('/status', async (req, res) => {
+  // res.sendStatus(400); // TODO: remove this at PR
   const count = await checkMfaStatus();
   if (count > 0) {
     return res.send({ isMfaAuthenticated: true });

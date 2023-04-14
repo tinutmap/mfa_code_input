@@ -8,10 +8,6 @@ interface State {
   hasError: boolean;
 }
 export class ErrorBoundary extends Component<Props, State> {
-  //   constructor(props) {
-  //     super(props);
-  //     this.state = { hasError: false };
-  //   }
   public state: State = {
     hasError: false,
   };
@@ -22,12 +18,6 @@ export class ErrorBoundary extends Component<Props, State> {
   }
 
   componentDidCatch(error: Error, info: ErrorInfo) {
-    // Example "componentStack":
-    //   in ComponentThatThrows (created by App)
-    //   in ErrorBoundary (created by App)
-    //   in div (created by App)
-    //   in App
-    // logErrorToMyService(error, info.componentStack);
     console.log({ error, info });
   }
 
