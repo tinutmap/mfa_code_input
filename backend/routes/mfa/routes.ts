@@ -1,7 +1,15 @@
 import express from 'express';
 import { createMfaAuthenticationSessions, createMfaCode } from './set';
-import { checkMfaCode, getLastMfaCreatedTime, checkMfaStatus } from './get';
-import { TIMER_DURATION_IN_MILLISECOND } from './constants';
+import {
+  checkMfaCode,
+  getLastMfaCreatedTime,
+  checkMfaStatus,
+  getLastMfaAuthenticatedTime,
+} from './get';
+import {
+  MFA_EXPIRATION_DURATION_IN_SECONDS,
+  TIMER_DURATION_IN_MILLISECOND,
+} from './constants';
 import { mfaGatingWrapperFn } from './mfaGatingFn';
 
 const router = express.Router();
@@ -44,10 +52,18 @@ router.post('/send-code', async (req, res, next) => {
 
 // NOTE: this route is created to test the mfaGatingWrapperFn, it will only respond if passing mfaGatingWrapperFn
 router.get(
-  '/test',
+  '/check-expire',
   async (req, res, next) =>
-    await mfaGatingWrapperFn(req, res, next, () => {
-      return res.send({ test: 'OK' });
+    await mfaGatingWrapperFn(req, res, next, async () => {
+      const authenticatedDateTime = new Date(
+        (await getLastMfaAuthenticatedTime()) + ' UTC'
+      );
+      const mfaExpiredTime = new Date();
+      mfaExpiredTime.setTime(
+        authenticatedDateTime.getTime() +
+          MFA_EXPIRATION_DURATION_IN_SECONDS * 1000
+      );
+      return res.send({ mfaExpiredTime });
     })
 );
 
