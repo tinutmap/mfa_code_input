@@ -2,6 +2,7 @@ import express from 'express';
 import { createMfaAuthenticationSessions, createMfaCode } from './set';
 import { checkMfaCode, getLastMfaCreatedTime, checkMfaStatus } from './get';
 import { TIMER_DURATION_IN_MILLISECOND } from './constants';
+import { mfaGatingFnWrapper } from './mfaGatingFn';
 
 const router = express.Router();
 
@@ -40,5 +41,13 @@ router.post('/send-code', async (req, res, next) => {
   }
   return res.sendStatus(401);
 });
+
+router.get(
+  '/test',
+  async (req, res, next) =>
+    await mfaGatingFnWrapper(req, res, next, () => {
+      return res.send({ test: 'OK' });
+    })
+);
 
 export default router;
