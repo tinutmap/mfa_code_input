@@ -1,12 +1,15 @@
 // import { resolve } from 'path';
 import { db } from '../../backend';
-import { MOCKED_USER_ID, MOCKED_SESSION_ID } from './constants';
+import {
+  MOCKED_USER_ID,
+  MOCKED_SESSION_ID,
+  MFA_EXPIRATION_DURATION_IN_SECONDS,
+} from './constants';
 
 export async function checkMfaStatus(): Promise<number> {
   // res: Response,
   // next: NextFunction
 
-  const TIME_LIMIT_IN_SECONDS = 1 * 60;
   const sql = `
         SELECT 
         COUNT(*) count
@@ -15,7 +18,7 @@ export async function checkMfaStatus(): Promise<number> {
                 *
             FROM MfaAuthenticationSessionRecords
             WHERE
-              ROUND((JULIANDAY('now') - JULIANDAY(authenticated_time)) * 86400) < ${TIME_LIMIT_IN_SECONDS} AND
+              ROUND((JULIANDAY('now') - JULIANDAY(authenticated_time)) * 86400) < ${MFA_EXPIRATION_DURATION_IN_SECONDS} AND
               user_id = '${MOCKED_USER_ID}' AND
               session_id = '${MOCKED_SESSION_ID}'
         )
@@ -80,5 +83,32 @@ export async function getLastMfaCreatedTime(): Promise<string> {
         resolve(createdTime);
       }
     });
+  });
+}
+
+export async function getLastMfaAuthenticatedTime(): Promise<string> {
+  const sql = `
+      SELECT
+        authenticated_time
+      FROM MfaAuthenticationSessionRecords
+      WHERE
+        user_id = '${MOCKED_USER_ID}' AND
+        session_id = '${MOCKED_SESSION_ID}'
+`;
+  interface RowAuthenticatedTime {
+    authenticated_time: string;
+  }
+  return await new Promise((resolve, reject) => {
+    db.get<RowAuthenticatedTime>(
+      sql,
+      async (err, row: RowAuthenticatedTime) => {
+        if (err) {
+          reject(err.message);
+          return console.log(err.message);
+        } else {
+          return resolve(row?.authenticated_time);
+        }
+      }
+    );
   });
 }

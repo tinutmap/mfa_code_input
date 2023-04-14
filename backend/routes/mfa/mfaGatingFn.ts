@@ -1,7 +1,7 @@
 import { NextFunction, Request, Response } from 'express';
 import { checkMfaStatus } from './get';
 
-export async function mfaGatingFnWrapper(
+export async function mfaGatingWrapperFn(
   req: Request,
   res: Response,
   next: NextFunction,
