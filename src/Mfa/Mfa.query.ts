@@ -39,3 +39,15 @@ export const sendMfaCode = async () => {
     return res.json() as Promise<sendMfaCodeType>;
   } else throw new Error(`STATUS ${res.status}: ${res.statusText}`);
 };
+
+export type MfaExpiredDateTimeDatatype = {
+  mfaExpiredTime: string;
+};
+export const getMfaExpiredDateTime = async () => {
+  const res = await fetch('http://localhost:3000/mfa/check-expire', {
+    method: 'GET',
+  });
+  if (res.ok) {
+    return res.json() as Promise<MfaExpiredDateTimeDatatype>;
+  } else throw new Error(`STATUS ${res.status}: ${res.statusText}`);
+};

@@ -2,6 +2,7 @@ import React from 'react';
 import './App.css';
 import { MfaWrapper } from './Mfa/Mfa';
 import { ErrorBoundary } from './lib/ErrorBoundary';
+import { MfaWrappedChildComponent } from './Mfa/MfaWrappedChildComponent';
 
 export const appHeader = 'Simple MFA Input with Countdown Timer';
 
@@ -13,7 +14,7 @@ function App() {
         <div>
           <ErrorBoundary>
             <MfaWrapper>
-              <div>Child Component</div>
+              <MfaWrappedChildComponent />
             </MfaWrapper>
           </ErrorBoundary>
         </div>
