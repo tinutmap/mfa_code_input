@@ -5,18 +5,18 @@ import React, { useState } from 'react';
 
 export const MfaWrappedChildComponent = () => {
   const [doRefetch, setDoRefetch] = useState(false);
-  const { data, status } = useAsync<MfaExpiredDateTimeDatatype>(
+  const { data, status, error } = useAsync<MfaExpiredDateTimeDatatype>(
     getMfaExpiredDateTime,
     [doRefetch]
   );
-  console.log({ data, type: status });
+  console.log({ data, type: status, error });
 
   switch (status) {
     case ResponseStatus.Pending: {
       return <p>Loading...</p>;
     }
     case ResponseStatus.Reject: {
-      throw new Error(data.toString());
+      throw new Error(error?.toString());
     }
     case ResponseStatus.Resolved: {
       const { mfaExpiredTime } = data;

@@ -63,7 +63,7 @@ export async function createMfaCode() {
     VALUES (
       '${MOCKED_USER_ID}',
       '${MOCKED_SESSION_ID}',
-      ${code}
+      ${code} -- BUG: [MFA-45] code inserted here is number not string, therefore 0 prefix is gone.
     )
     ON CONFLICT(user_id, session_id) DO
     UPDATE SET

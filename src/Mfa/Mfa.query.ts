@@ -40,6 +40,9 @@ export const sendMfaCode = async () => {
   } else throw new Error(`STATUS ${res.status}: ${res.statusText}`);
 };
 
+export type MfaErrorType = {
+  mfaInvalid: boolean;
+};
 export type MfaExpiredDateTimeDatatype = {
   mfaExpiredTime: string;
 };
@@ -48,6 +51,13 @@ export const getMfaExpiredDateTime = async () => {
     method: 'GET',
   });
   if (res.ok) {
-    return res.json() as Promise<MfaExpiredDateTimeDatatype>;
-  } else throw new Error(`STATUS ${res.status}: ${res.statusText}`);
+    return (await res.json()) as MfaExpiredDateTimeDatatype;
+  }
+  let mfaError;
+  try {
+    mfaError = (await res.json()) as MfaErrorType;
+  } catch {
+    throw new Error(`STATUS ${res.status}: ${res.statusText}`);
+  }
+  throw new Error(JSON.stringify({ ...mfaError }));
 };
