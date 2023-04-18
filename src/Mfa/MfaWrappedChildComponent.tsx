@@ -28,7 +28,7 @@ export const MfaWrappedChildComponent = () => {
           <input
             type="button"
             onClick={async () => setDoRefetch((state: boolean) => !state)}
-            value="Check MFA Expiration Time Again. If clicked after expiration time, this will prompt MFA process "
+            value="Check MFA Expiration Time Again. If clicked after expiration time, this will prompt MFA process."
           />
         </div>
       );
