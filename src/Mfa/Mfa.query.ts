@@ -57,10 +57,7 @@ export const getMfaExpiredDateTime = async () => {
   try {
     mfaError = (await res.json()) as MfaErrorType;
   } catch {
-    // empty catch block as error will be thrown below eventually
+    throw new Error(`STATUS ${res.status}: ${res.statusText}`);
   }
-  if (res.status === 401 && mfaError) {
-    throw new Error(JSON.stringify({ ...mfaError }));
-  }
-  throw new Error(`STATUS ${res.status}: ${res.statusText}`);
+  throw new Error(JSON.stringify({ ...mfaError }));
 };
