@@ -19,7 +19,7 @@ function reducerFunc(state: stateType, action: stateType) {
       return (state = {
         ...state,
         status: ResponseStatus.Reject,
-        data: action.data,
+        error: action.error,
       });
     }
   }
@@ -29,7 +29,8 @@ interface stateType {
   status: ResponseStatus;
   // TODO: [MFA-3] can pass stateType<T> to data: T if more time to research.
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
+  data?: any;
+  error?: Error;
 }
 
 export enum ResponseStatus {
@@ -52,10 +53,16 @@ export function useAsync<T>(
   useEffect(() => {
     asyncCallBackFn()
       .then((result) => {
-        dispatch({ status: ResponseStatus.Resolved, data: result });
+        dispatch({
+          status: ResponseStatus.Resolved,
+          data: result,
+        });
       })
       .catch((e) => {
-        dispatch({ status: ResponseStatus.Reject, data: e.message });
+        dispatch({
+          status: ResponseStatus.Reject,
+          error: new Error(e),
+        });
       });
   }, dependencyArray);
   return { ...state, data: state.data as T };
