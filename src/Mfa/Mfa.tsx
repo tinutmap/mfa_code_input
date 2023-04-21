@@ -5,6 +5,8 @@ import React, {
   useRef,
   useState,
   Dispatch,
+  createContext,
+  SetStateAction,
 } from 'react';
 import { ResponseStatus, useAsync } from '../lib/useAsync';
 import {
@@ -193,6 +195,10 @@ type MfaWrapperProps = {
   children?: ReactNode;
 };
 
+export const setDoRefetchMfaStatusContext = createContext<
+  Dispatch<SetStateAction<boolean>>
+>(() => false);
+
 export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
   const [doRefetchMfaStatus, setDoRefetchMfaStatus] = useState(false);
   const { data, status } = useAsync<MfaStatusDatatype>(getMfaStatus, [
@@ -217,7 +223,11 @@ export const MfaWrapper: FC<MfaWrapperProps> = ({ children }): JSX.Element => {
           />
         );
       }
-      return <div>{children}</div>;
+      return (
+        <setDoRefetchMfaStatusContext.Provider value={setDoRefetchMfaStatus}>
+          <div>{children}</div>;
+        </setDoRefetchMfaStatusContext.Provider>
+      );
     }
   }
 };

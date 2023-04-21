@@ -1,10 +1,17 @@
 import { ResponseStatus } from '../lib/useAsync';
 import { MfaExpiredDateTimeDatatype, getMfaExpiredDateTime } from './Mfa.query';
 import { useAsync } from '../lib/useAsync';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
+import { setDoRefetchMfaStatusContext } from './Mfa';
+import { filterMfaInvalidError } from '../lib/filterMfaInvalidError';
 
 export const MfaWrappedChildComponent = () => {
-  const [doRefetch, setDoRefetch] = useState(false);
+  const [
+    doRefetch,
+    //  setDoRefetch
+  ] = useState(false);
+
+  const setDoRefetchMfaStatus = useContext(setDoRefetchMfaStatusContext);
   const { data, status, error } = useAsync<MfaExpiredDateTimeDatatype>(
     getMfaExpiredDateTime,
     [doRefetch]
@@ -16,7 +23,7 @@ export const MfaWrappedChildComponent = () => {
       return <p>Loading...</p>;
     }
     case ResponseStatus.Reject: {
-      throw new Error(error?.toString());
+      throw new Error(error?.message.toString());
     }
     case ResponseStatus.Resolved: {
       const { mfaExpiredTime } = data;
@@ -27,7 +34,14 @@ export const MfaWrappedChildComponent = () => {
           ).toTimeString()}`}</p>
           <input
             type="button"
-            onClick={async () => setDoRefetch((state: boolean) => !state)}
+            onClick={async () => {
+              // setDoRefetch((state: boolean) => !state)
+              try {
+                await getMfaExpiredDateTime();
+              } catch (error) {
+                filterMfaInvalidError(error as Error, setDoRefetchMfaStatus);
+              }
+            }}
             value="Check MFA Expiration Time Again. If clicked after expiration time, this will prompt MFA process."
           />
         </div>

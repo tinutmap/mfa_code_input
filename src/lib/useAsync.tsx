@@ -61,7 +61,7 @@ export function useAsync<T>(
       .catch((e) => {
         dispatch({
           status: ResponseStatus.Reject,
-          error: new Error(e),
+          error: e,
         });
       });
   }, dependencyArray);
