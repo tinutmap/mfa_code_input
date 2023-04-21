@@ -10,14 +10,10 @@ export function filterMfaInvalidError(
     const mfaInvalid = JSON.parse(errMessage)?.mfaInvalid;
 
     if (mfaInvalid) {
-      setDoRefetchMfaStatus((state) => !state);
+      return setDoRefetchMfaStatus((state) => !state);
     }
-    // return new Error(...Object.values(error));
-    // return error;
   } catch {
-    // return new Error(...Object.values(error));
-    // throw error;
-    // return error;
+    // NOTE: intentionally blank, error will be in console.error() below
   }
-  return new Error(...Object.values(error));
+  console.error(error);
 }
