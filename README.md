@@ -5,6 +5,132 @@ This project showcases the author's Web Development capabilities by building a M
 
 Tech Stack: Typescript, Node Express, Sqlite database engine, React.
 
+# Project Hightlights:
+## React Hooks Use Cases:
+### `useState`:
+
+- Used to hold state of interested variables
+```
+  const [timerInSeconds, setTimerInSeconds] = useState(-1); // NOTE: timer set to -1 denotes timer hasn't been set, to differentiate from timer === 0 which means it has expired
+```
+```
+  const [errorMessage, setErrorMessage] = useState('');
+```
+```
+  const [isCodeSubmittedFirstTime, setIsCodeSubmittedFirstTime] = useState(false);
+```
+- Used as a trigger to invoke component rerendering
+
+```
+  const [doRefetchMfaStatus, setDoRefetchMfaStatus] = useState(false);
+```
+### `useRef`:
+- Use to reference an html element
+```
+  const tileRef = useRef<HTMLInputElement>(null);
+  ...
+  <input
+    type="text"
+    minLength={1}
+    maxLength={1}
+    value={digit}
+    onChange={(e) => updateCode(e.target.value)}
+    onKeyDown={(event) => handleKeyDown(event)}
+    ref={tileRef}
+    className="mfa-tile"
+  />
+```
+- Use as variable that should not trigger component's rerendering when its state change
+```
+  const currentTileIndex = useRef(0);
+  ...
+  if (!digit) {
+    event.preventDefault();
+    currentTileIndex.current = index - 1;
+    return;
+  }
+
+```
+### `useEffect`:
+- To perform effect after component's rendering or after state of a dependent variable changes
+```
+  // countdown timer logic in useEffect
+  useEffect(() => {
+    let reduceTimer: NodeJS.Timer;
+    if (timerInSeconds > 0) {
+      reduceTimer = setInterval(
+        () => setTimerInSeconds((time) => time - 1),
+        1000
+      );
+    }
+    return () => clearInterval(reduceTimer);
+  }, [timerInSeconds]);
+```
+```
+  // error message
+  useEffect(() => {
+    // NOTE: remove error message when input changes after wrong code's input
+    setErrorMessage('');
+
+    // NOTE: submit code first time after code is filled up to required length
+    if (code.join('').length === length && !isCodeSubmittedFirstTime) {
+      submitMfaCodeCallBack();
+    }
+  }, [code]);
+```
+### `useReducer`:
+- See the whole implementation in [`useAsync.tsx`](https://github.com/tinutmap/mfa_code_input/blob/b84386f448aadcf54d06b8954ac2f2504378aa33/src/lib/useAsync.tsx)
+### `createContext` and `useContext`:
+- Create and consume context's provider of props passing through the component's tree
+```
+  export const setDoRefetchMfaStatusContext = createContext<Dispatch<SetStateAction<boolean>>>(() => false);
+  ...
+  <setDoRefetchMfaStatusContext.Provider value={setDoRefetchMfaStatus}>
+    <div>{children}</div>;
+  </setDoRefetchMfaStatusContext.Provider>
+  ...
+  const setDoRefetchMfaStatus = useContext(setDoRefetchMfaStatusContext);
+```
+## React Error Boundary:
+- Use to catch and handle errors at rendering. See [ErrorBoundary.tsx](https://github.com/tinutmap/mfa_code_input/blob/b84386f448aadcf54d06b8954ac2f2504378aa33/src/lib/ErrorBoundary.tsx)
+
+## Using Higher-Order Function as checking gate in Backend for MFA status:
+- 
+```
+  export async function mfaGatingWrapperFn(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    wrappedFn?: (req: Request, res: Response, next: NextFunction) => any
+  ) {
+    const count = await checkMfaStatus();
+    if (count > 0) {
+      return wrappedFn && typeof wrappedFn === 'function'
+        ? wrappedFn(req, res, next)
+        : next();
+    }
+    res.status(401).send({ mfaInvalid: true });
+  }
+...
+// NOTE: this route is created to test the mfaGatingWrapperFn, it will only respond if passing mfaGatingWrapperFn
+  router.get(
+    '/check-expire',
+    async (req, res, next) =>
+      await mfaGatingWrapperFn(req, res, next, async () => {
+        const authenticatedDateTime = new Date(
+          (await getLastMfaAuthenticatedTime()) + ' UTC'
+        );
+        const mfaExpiredTime = new Date();
+        mfaExpiredTime.setTime(
+          authenticatedDateTime.getTime() +
+            MFA_EXPIRATION_DURATION_IN_SECONDS * 1000
+        );
+        return res.send({ mfaExpiredTime });
+      })
+  );
+
+```
+
 # Disclaimer:
 The scope of this project does not include or intend to venture in encryption techniques in masking MFA code stored in the database. It neither includes the user authentication/ user management/ session management as typically seen in production apps.
 
