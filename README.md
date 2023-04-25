@@ -154,43 +154,6 @@ Tech Stack: Typescript, Node Express, Sqlite database engine, React.
 ## React Error Boundary:
 - Use to catch and handle errors at rendering. See [ErrorBoundary.tsx](https://github.com/tinutmap/mfa_code_input/blob/b84386f448aadcf54d06b8954ac2f2504378aa33/src/lib/ErrorBoundary.tsx)
 
-## Using Higher-Order Function as checking gate in Backend for MFA status:
-- 
-```
-  export async function mfaGatingWrapperFn(
-    req: Request,
-    res: Response,
-    next: NextFunction,
-    wrappedFn?: (req: Request, res: Response, next: NextFunction) => any
-  ) {
-    const count = await checkMfaStatus();
-    if (count > 0) {
-      return wrappedFn && typeof wrappedFn === 'function'
-        ? wrappedFn(req, res, next)
-        : next();
-    }
-    res.status(401).send({ mfaInvalid: true });
-  }
-...
-// NOTE: this route is created to test the mfaGatingWrapperFn, it will only respond if passing mfaGatingWrapperFn
-  router.get(
-    '/check-expire',
-    async (req, res, next) =>
-      await mfaGatingWrapperFn(req, res, next, async () => {
-        const authenticatedDateTime = new Date(
-          (await getLastMfaAuthenticatedTime()) + ' UTC'
-        );
-        const mfaExpiredTime = new Date();
-        mfaExpiredTime.setTime(
-          authenticatedDateTime.getTime() +
-            MFA_EXPIRATION_DURATION_IN_SECONDS * 1000
-        );
-        return res.send({ mfaExpiredTime });
-      })
-  );
-
-```
-
 # Disclaimer:
 The scope of this project does not include or intend to venture in encryption techniques in masking MFA code stored in the database. It neither includes the user authentication/ user management/ session management as typically seen in production apps.
 
