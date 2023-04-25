@@ -1,6 +1,6 @@
 import React from 'react';
 import './App.css';
-import { MfaWrapper } from './Mfa/Mfa';
+import { MfaWrapper } from './Mfa/MfaWrapper';
 import { ErrorBoundary } from './lib/ErrorBoundary';
 import { MfaWrappedChildComponent } from './Mfa/MfaWrappedChildComponent';
 
