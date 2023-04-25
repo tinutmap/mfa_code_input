@@ -6,6 +6,66 @@ This project showcases the author's Web Development capabilities by building a M
 Tech Stack: Typescript, Node Express, Sqlite database engine, React.
 
 # Project Hightlights:
+## Using MFA Wrapper Component in Frontend and  Higher-Order Function in Backend as checking gate for MFA status:
+- In Frontend, MFA Wrapper Component determines whether to render <Mfa /> component for if MFA is not authenticated, otherwise render <MfaWrappedChildComponent />
+```
+  // App.tsx
+  <MfaWrapper>
+    <MfaWrappedChildComponent />
+  </MfaWrapper>
+```
+```
+  // Mfa.tsx
+  if (!isMfaAuthenticated) {
+    return (
+      <Mfa
+        length={mfaCodeLength}
+        setDoRefetchMfaStatus={setDoRefetchMfaStatus}
+      />
+    );
+  }
+  return (
+    <setDoRefetchMfaStatusContext.Provider value={setDoRefetchMfaStatus}>
+      <div>{children}</div>;
+    </setDoRefetchMfaStatusContext.Provider>
+  );
+```
+- In Backend, mfaGatingWrapperFn is a Higher-Order Function returning next or wrapped Function if MFA is still within valid timeframe, or return status 401 with { mfaInvalid: true } flag to Frontend.
+
+```
+  export async function mfaGatingWrapperFn(
+    req: Request,
+    res: Response,
+    next: NextFunction,
+    wrappedFn?: (req: Request, res: Response, next: NextFunction) => any
+  ) {
+    const count = await checkMfaStatus();
+    if (count > 0) {
+      return wrappedFn && typeof wrappedFn === 'function'
+        ? wrappedFn(req, res, next)
+        : next();
+    }
+    res.status(401).send({ mfaInvalid: true });
+  }
+  ...
+  // NOTE: this route is created to test the mfaGatingWrapperFn, it will only respond if passing mfaGatingWrapperFn
+  router.get(
+    '/check-expire',  
+    async (req, res, next) =>
+      await mfaGatingWrapperFn(req, res, next, async () => {
+        const authenticatedDateTime = new Date(
+          (await getLastMfaAuthenticatedTime()) + ' UTC'
+        );
+        const mfaExpiredTime = new Date();
+        mfaExpiredTime.setTime(
+          authenticatedDateTime.getTime() +
+            MFA_EXPIRATION_DURATION_IN_SECONDS * 1000
+        );
+        return res.send({ mfaExpiredTime });
+      })
+  );
+
+```
 ## React Hooks Use Cases:
 ### `useState`:
 
