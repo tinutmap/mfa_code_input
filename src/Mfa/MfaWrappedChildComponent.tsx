@@ -2,7 +2,7 @@ import { ResponseStatus } from '../lib/useAsync';
 import { MfaExpiredDateTimeDatatype, getMfaExpiredDateTime } from './Mfa.query';
 import { useAsync } from '../lib/useAsync';
 import React, { useState, useContext } from 'react';
-import { setDoRefetchMfaStatusContext } from './Mfa';
+import { setDoRefetchMfaStatusContext } from './MfaWrapper';
 import { filterMfaInvalidError } from '../lib/filterMfaInvalidError';
 
 export const MfaWrappedChildComponent = () => {
