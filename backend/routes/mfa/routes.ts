@@ -47,7 +47,7 @@ router.post('/send-code', async (req, res, next) => {
       .status(200)
       .send({ timerDurationInMillisecond: TIMER_DURATION_IN_MILLISECOND });
   }
-  return res.sendStatus(401);
+  return res.sendStatus(401); // BUG: [MFA-51] if MFA_EXPIRATION_DURATION_IN_SECONDS < TIMER_DURATION_IN_MILLISECOND, <MfaWrapper /> in FE will be hit with this status 401.
 });
 
 // NOTE: this route is created to test the mfaGatingWrapperFn, it will only respond if passing mfaGatingWrapperFn
