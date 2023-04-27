@@ -151,9 +151,8 @@ Tech Stack: Typescript, Node Express, Sqlite database engine, React.
   ...
   const setDoRefetchMfaStatus = useContext(setDoRefetchMfaStatusContext);
 ```
-## React Error Boundary and MFA specific error catching for event:
-- Use to catch and handle errors at rendering. See [ErrorBoundary.tsx](https://github.com/tinutmap/mfa_code_input/blob/b84386f448aadcf54d06b8954ac2f2504378aa33/src/lib/ErrorBoundary.tsx)
-- Filtering MFA specific error and pass it down to <MfaWrapper/> instead of rendering Error Boundary component
+## Frontend Error Handling and MFA specific error catching for event:
+-  React Error Boundary: catching errors at rendering stage of descending components and extra logic to filter MFA specific error and pass it down to <MfaWrapper/> instead of rendering Error Boundary component. See in full in [ErrorBoundary.tsx](https://github.com/tinutmap/mfa_code_input/blob/b84386f448aadcf54d06b8954ac2f2504378aa33/src/lib/ErrorBoundary.tsx)
 ```
   // ErrorBoundary.tsx
   static getDerivedStateFromError(error: Error): State | undefined {
@@ -180,6 +179,42 @@ Tech Stack: Typescript, Node Express, Sqlite database engine, React.
     }
 
     return this.props.children;
+  }
+```
+- As Error Boundary can't catch errors thrown by events in descending component, (source)[https://legacy.reactjs.org/docs/error-boundaries.html#how-about-event-handlers]. Thus, custom event handler, which include MFA filter and invocation of <MfaWrapper /> refetch flag are made
+
+```
+  // MfaWrappedChildComponent.tsx
+  <input
+            type="button"
+            onClick={async () => {
+              try {
+                await getMfaExpiredDateTime();
+              } catch (error) {
+                filterMfaInvalidError(error as Error, setDoRefetchMfaStatus);
+              }
+            }}
+            value="Check MFA Expiration Time Again. If clicked after expiration time, this will prompt MFA process."
+          />
+```
+```
+  // filterMfaInvalidError.ts
+  export function filterMfaInvalidError(
+    error: Error,
+    setDoRefetchMfaStatus: Dispatch<SetStateAction<boolean>>
+  ) {
+    const errMessage = error?.message;
+
+    try {
+      const mfaInvalid = JSON.parse(errMessage)?.mfaInvalid;
+
+      if (mfaInvalid) {
+        return setDoRefetchMfaStatus((state) => !state);
+      }
+    } catch {
+      // NOTE: intentionally blank, error will be in console.error() below
+    }
+    console.error(error);
   }
 ```
 
