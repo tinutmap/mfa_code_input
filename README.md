@@ -5,7 +5,7 @@ This project showcases the author's Web Development capabilities by building a M
 
 Tech Stack: Typescript, Node Express, Sqlite database engine, React.
 
-# Project Hightlights:
+# Technical Hightlights:
 ## Using MFA Wrapper Component in Frontend and  Higher-Order Function in Backend as checking gate for MFA status:
 - In Frontend, MFA Wrapper Component determines whether to render <Mfa /> component for if MFA is not authenticated, otherwise render <MfaWrappedChildComponent />
 ```
@@ -151,8 +151,39 @@ Tech Stack: Typescript, Node Express, Sqlite database engine, React.
   ...
   const setDoRefetchMfaStatus = useContext(setDoRefetchMfaStatusContext);
 ```
-## React Error Boundary:
+## React Error Boundary and MFA specific error catching for event:
 - Use to catch and handle errors at rendering. See [ErrorBoundary.tsx](https://github.com/tinutmap/mfa_code_input/blob/b84386f448aadcf54d06b8954ac2f2504378aa33/src/lib/ErrorBoundary.tsx)
+- Filtering MFA specific error and pass it down to <MfaWrapper/> instead of rendering Error Boundary component
+```
+  // ErrorBoundary.tsx
+  static getDerivedStateFromError(error: Error): State | undefined {
+    // Update state so the next render will show the fallback UI.
+    try {
+      const message = JSON.parse(error.message);
+      const mfaInvalid = message?.mfaInvalid;
+      if (mfaInvalid) {
+        return { isMfaInvalid: true, hasError: true };
+      } else
+        return {
+          hasError: true,
+          isMfaInvalid: false,
+        };
+    } catch (e) {
+      console.log(e);
+    }
+  }
+  ...
+  render() {
+    if (this.state.hasError && !this.state.isMfaInvalid) {
+      // You can render any custom fallback UI
+      return <div>{`Sorry, something's wrong. Please check console`}</div>;
+    }
+
+    return this.props.children;
+  }
+```
+
+
 
 # Disclaimer:
 The scope of this project does not include or intend to venture in encryption techniques in masking MFA code stored in the database. It neither includes the user authentication/ user management/ session management as typically seen in production apps.
